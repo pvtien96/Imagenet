@@ -8,7 +8,7 @@ stage_out_channel = [64] + [256] * 3 + [512] * 4 + [1024] * 6 + [2048] * 3
 def adapt_channel(compress_rate=[0.0] * 100):
     stage_oup_cprate = []
     stage_oup_cprate += [compress_rate[0]]
-    for i in range(len(stage_repeat) - 1):
+    for i in range(len(stage_repeat)):
         stage_oup_cprate += [compress_rate[i + 1]] * stage_repeat[i]
     stage_oup_cprate += [0.0] * stage_repeat[-1]
 
@@ -155,7 +155,8 @@ class ResNet50(nn.Module):
                 layer_num += 1
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(2048, num_classes)
+        last_out_channels = self.layer4[-1].conv3.out_channels
+        self.fc = nn.Linear(last_out_channels, num_classes)
 
     def forward(self, x):
         x = self.conv1(x)
